@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf9e0f325884899ad815299a31230f0, type: 3}
+  m_Name: ColorSchema
+  m_EditorClassIdentifier: 
+  healthColor:
+    serializedVersion: 2
+    rgba: 4278190222
+  questWarningColor:
+    serializedVersion: 2
+    rgba: 4281310975
+  questInProgressColor:
+    serializedVersion: 2
+    rgba: 4293500485
+  questCompleteColor:
+    serializedVersion: 2
+    rgba: 4283023360
