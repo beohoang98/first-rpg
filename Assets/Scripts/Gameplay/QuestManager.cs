@@ -1,3 +1,4 @@
+using System.Linq;
 using Assets.Scripts.Gameplay;
 using UnityEngine;
 
@@ -8,9 +9,10 @@ namespace Gameplay
         private static QuestManager _instance;
         public static QuestManager Instance => _instance;
 
-        private Quest _activeQuest;
-        public Quest ActiveQuest => _activeQuest;
-        [SerializeField] QuestWindow questWindow;
+        private Quest activeQuest;
+        public Quest ActiveQuest => activeQuest;
+        [SerializeField] private QuestWindow questWindow;
+        [SerializeField] private AudioClip completeAudio;
 
         // Use this for initialization
         void Start()
@@ -18,23 +20,27 @@ namespace Gameplay
             if (_instance == null)
             {
                 _instance = this;
-            } else
+            }
+            else
             {
                 Destroy(this);
             }
-            _activeQuest = null;
+
+            activeQuest = null;
         }
 
         public void PushQuest(Quest quest)
         {
-            _activeQuest = quest;
+            activeQuest = quest;
             questWindow.SetQuest(ref quest);
-            _activeQuest.onUpdates += OnQuestUpdate;
-            Object[] list = FindObjectsOfType(quest.targetType.GetClass());
+            activeQuest.onUpdates += OnQuestUpdate;
+            QuestItem[] list = Resources.FindObjectsOfTypeAll<QuestItem>();
+            QuestItem[] filtered = list.Where(item => item.GetType().Name.Equals(quest.targetItemName)).ToArray();
+
             switch (quest.type)
             {
-                case QuestType.KILL:
-                    foreach (var item in list)
+                case QuestType.Kill:
+                    foreach (var item in filtered)
                     {
                         if (item is Killable killable)
                         {
@@ -43,15 +49,15 @@ namespace Gameplay
                     }
 
                     break;
-                case QuestType.COLLECT:
-                    foreach (var item in list)
+                case QuestType.Collect:
+                    foreach (var item in filtered)
                     {
                         if (item is Collectable collectable)
                         {
                             collectable.AddEventCollected(quest.DoCollected);
                         }
                     }
-                    
+
                     break;
             }
         }
@@ -61,10 +67,10 @@ namespace Gameplay
             if (!quest.isDone) return;
             switch (quest.reward.type)
             {
-                case RewardType.ITEM:
+                case RewardType.Item:
                     // spawn items
                     break;
-                case RewardType.WEAPON:
+                case RewardType.Weapon:
                     // do nothing
                     break;
             }
@@ -72,10 +78,12 @@ namespace Gameplay
 
         public void CompleteQuest()
         {
-            _activeQuest = null;
+            activeQuest = null;
             questWindow.Hide();
+            if (completeAudio != null && Camera.main != null)
+            {
+                AudioSource.PlayClipAtPoint(completeAudio, Camera.main.transform.position);
+            }
         }
-        
-        
     }
 }

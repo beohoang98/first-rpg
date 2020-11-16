@@ -9,9 +9,9 @@ namespace Weapon
         private static WeaponHolder _instance;
         [SerializeField] private InputActionAsset inputActions;
 
-        private GameObject _weapon;
-        private Weapon _touchWeapon;
-        private Camera _camera;
+        private GameObject weapon;
+        private Weapon touchWeapon;
+        private Camera camera;
 
         // Use this for initialization
         private void Start()
@@ -26,7 +26,7 @@ namespace Weapon
                 return;
             }
 
-            _camera = Camera.main;
+            camera = Camera.main;
 
             InputAction action = inputActions.FindAction(GameInput.Look);
             InputAction pickupAction = inputActions.FindAction(GameInput.Obtain);
@@ -39,8 +39,8 @@ namespace Weapon
         // Update is called once per frame
         private void Update()
         {
-            if (_weapon == null) return;
-            _weapon.gameObject.transform.position = transform.position;
+            if (weapon == null) return;
+            weapon.gameObject.transform.position = transform.position;
         }
 
         private void OnDisable()
@@ -53,19 +53,18 @@ namespace Weapon
 
         private void OnMouseMove(InputAction.CallbackContext context)
         {
-            if (_weapon == null) return;
+            if (weapon == null) return;
             Vector2 mousePos = context.ReadValue<Vector2>();
-            Vector2 realPos = _camera.ScreenToWorldPoint(mousePos);
-            _weapon.gameObject.transform.rotation =
+            Vector2 realPos = camera.ScreenToWorldPoint(mousePos);
+            weapon.gameObject.transform.rotation =
                 Quaternion.LookRotation(Vector3.forward, realPos - (Vector2) transform.position);
         }
 
         private void OnPickupPress(InputAction.CallbackContext context)
         {
-            Debug.Log(context);
-            if (_touchWeapon != null && _touchWeapon.gameObject != _weapon)
+            if (touchWeapon != null && touchWeapon.gameObject != weapon)
             {
-                _touchWeapon.DoPickup(this);
+                touchWeapon.DoPickup(this);
             }
         }
 
@@ -73,8 +72,8 @@ namespace Weapon
         {
             if (collision.CompareTag(GameTag.Pickup))
             {
-                _touchWeapon = collision.GetComponent<Weapon>();
-                _touchWeapon.ShowUI();
+                touchWeapon = collision.GetComponent<Weapon>();
+                if (touchWeapon != null) touchWeapon.ShowUI();
             }
         }
 
@@ -82,11 +81,14 @@ namespace Weapon
         {
             if (collision.CompareTag(GameTag.Pickup))
             {
-                _touchWeapon.ShowUI(false);
-                _touchWeapon = null;
+                if (touchWeapon != null)
+                {
+                    touchWeapon.ShowUI(false);
+                    touchWeapon = null;
+                }
             }
         }
 
-        public void SetWeapon(GameObject weapon) => _weapon = weapon;
+        public void SetWeapon(GameObject weapon) => this.weapon = weapon;
     }
 }

@@ -1,13 +1,27 @@
-﻿using Constants;
+﻿using System;
+using Constants;
+using Gameplay;
 using UnityEngine;
 
 namespace Enemy
 {
-    [RequireComponent(typeof(BoxCollider2D))]
+    [ExecuteInEditMode]
+    [RequireComponent(typeof(PolygonCollider2D))]
     public class FightingArea : MonoBehaviour
     {
         [SerializeField] private Enemy[] enemies;
-        [SerializeField] private GameObject player;
+        [SerializeField] private PlayerController player;
+
+        private void Start()
+        {
+            enemies = GetComponentsInChildren<Enemy>();
+            player = FindObjectOfType<PlayerController>();
+        }
+
+        private void Reset()
+        {
+            Start();
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -15,7 +29,7 @@ namespace Enemy
             {
                 foreach (var enemy in enemies)
                 {
-                    enemy.OnPlayerEnterFightingArea(player);
+                    enemy.OnPlayerEnterFightingArea(player.gameObject);
                 }
             }
         }
@@ -26,7 +40,7 @@ namespace Enemy
             {
                 foreach (var enemy in enemies)
                 {
-                    enemy.OnPlayerLeaveFightingArea(player);
+                    enemy.OnPlayerLeaveFightingArea(player.gameObject);
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace Assets.Scripts.Gameplay
 
     public enum RewardType
     {
-        WEAPON,
-        ITEM,
+        Weapon,
+        Item,
     }
 }

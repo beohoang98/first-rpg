@@ -1,4 +1,5 @@
 using Attributes;
+using Constants;
 using Gameplay;
 using Pathfinding;
 using UnityEngine;
@@ -6,61 +7,70 @@ using UnityEngine.UI;
 
 namespace Enemy
 {
-    [ExecuteInEditMode]
     [RequireComponent(typeof(PolygonCollider2D))]
-    [RequireComponent(typeof(AIPath))]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(AIDestinationSetter))]
+    [RequireComponent(typeof(AIPath))]
     public class Enemy : Killable
     {
+        [SerializeField] private int damage = 10;
         [SerializeField] private float maxHealth = 30f;
-        private float _health = 30f;
-
         [SerializeField] private ColorSchema colorSchema;
         [SerializeField] private Canvas canvas;
         [SerializeField] private Slider healthSlider;
-        private Vector3 _startPoint;
-        private AIPath _aiPath;
-        private AIDestinationSetter _aiDestinationSetter;
+
+        private AIDestinationSetter aiDestinationSetter;
+
+        private AIPath aiPath;
+        private float health = 30f;
+        private Vector3 startPoint;
 
         private void Start()
         {
             canvas.worldCamera = Camera.main;
             healthSlider.gameObject.SetActive(false);
-            _startPoint = transform.localPosition;
-            _aiPath = GetComponent<AIPath>();
-            _aiDestinationSetter = GetComponent<AIDestinationSetter>();
-            
+            startPoint = transform.position;
+            aiPath = GetComponent<AIPath>();
+            aiDestinationSetter = GetComponent<AIDestinationSetter>();
+
             healthSlider.minValue = 0f;
             healthSlider.maxValue = maxHealth;
-            healthSlider.fillRect.GetComponent<SpriteRenderer>().color = colorSchema.healthColor;
-            _health = maxHealth;
+            healthSlider.fillRect.gameObject.GetComponent<Image>().color = colorSchema.healthColor;
+            health = maxHealth;
         }
 
         public void OnPlayerEnterFightingArea(GameObject player)
         {
-            _aiDestinationSetter.target = player.transform;
+            aiDestinationSetter.target = player.transform;
         }
 
         public void OnPlayerLeaveFightingArea(GameObject player)
         {
-            _aiDestinationSetter.target = null;
-            _aiPath.destination = _startPoint;
+            aiDestinationSetter.target = null;
+            aiPath.destination = startPoint;
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(float _damage)
         {
-            _health -= damage;
+            health -= _damage;
             UpdateHealthBar();
-            if (_health > 0) return;
+            if (health > 0) return;
             TriggerKilledCallback();
             Destroy(gameObject);
         }
 
-        private void UpdateHealthBar() 
+        private void UpdateHealthBar()
         {
-            healthSlider.value = _health;
+            healthSlider.value = health;
             healthSlider.gameObject.SetActive(true);
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            if (other.collider.CompareTag(GameTag.Player))
+            {
+                other.collider.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
+            }
         }
     }
 }

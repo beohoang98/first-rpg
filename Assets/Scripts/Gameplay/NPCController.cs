@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Attributes;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering.Universal;
 
 namespace Gameplay
@@ -14,24 +16,25 @@ namespace Gameplay
         [SerializeField] private Light2D light2D;
         [SerializeField] private ColorSchema colorSchema;
 
-        private Quest _inProgressQuest;
+        private Quest inProgressQuest;
 
-        public bool IsQuestInProgress() => _inProgressQuest != null;
+        public bool IsQuestInProgress() => inProgressQuest != null;
         public bool HasQuests() => quests.Count > 0;
-        public bool IsLastQuestDone() => _inProgressQuest && _inProgressQuest.isDone;
+        public bool IsLastQuestDone() => inProgressQuest && inProgressQuest.isDone;
+        [SerializeField] private UnityEvent onCompleteAllQuests;
 
         private void Start()
         {
-            _inProgressQuest = null;
+            inProgressQuest = null;
             questIcon.color = colorSchema.questWarningColor;
             light2D.color = colorSchema.questWarningColor;
         }
 
         public void AcceptQuest()
         {
-            if (quests.Count > 0 && !_inProgressQuest && !QuestManager.Instance.ActiveQuest)
+            if (quests.Count > 0 && !inProgressQuest && !QuestManager.Instance.ActiveQuest)
             {
-                _inProgressQuest = quests[0];
+                inProgressQuest = quests[0];
                 QuestManager.Instance.PushQuest(quests[0]);
                 questIcon.color = colorSchema.questInProgressColor;
                 light2D.color = colorSchema.questInProgressColor;
@@ -40,13 +43,14 @@ namespace Gameplay
 
         public void CompleteQuest()
         {
-            if (_inProgressQuest == null) return;
-            
+            if (inProgressQuest == null) return;
+
             quests.RemoveAt(0);
             if (quests.Count <= 0)
             {
                 questIcon.gameObject.SetActive(false);
                 light2D.gameObject.SetActive(false);
+                onCompleteAllQuests.Invoke();
             }
             else
             {
@@ -54,12 +58,12 @@ namespace Gameplay
                 light2D.color = colorSchema.questWarningColor;
             }
 
-            if (QuestManager.Instance.ActiveQuest == _inProgressQuest)
+            if (QuestManager.Instance.ActiveQuest == inProgressQuest)
             {
                 QuestManager.Instance.CompleteQuest();
             }
-            _inProgressQuest = null;
+
+            inProgressQuest = null;
         }
     }
-
 }

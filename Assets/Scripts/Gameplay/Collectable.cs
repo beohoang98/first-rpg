@@ -1,21 +1,18 @@
-using System;
-using UnityEngine;
-
 namespace Gameplay
 {
-    public abstract class Collectable : MonoBehaviour
+    public abstract class Collectable : QuestItem
     {
-        private OnCollect _onCollect = delegate {  };
+        private OnCollect onCollect = delegate {  };
         public delegate void OnCollect();
 
         public void AddEventCollected(OnCollect cb)
         {
-            _onCollect += cb;
+            onCollect += cb;
         }
         protected void TriggerCollectCallback()
         {
-            _onCollect.Invoke();
-            _onCollect = delegate {  };
+            onCollect.Invoke();
+            onCollect = delegate {  };
         }
     }
 }

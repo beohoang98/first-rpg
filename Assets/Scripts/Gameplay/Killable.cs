@@ -1,23 +1,19 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Gameplay
 {
-    public abstract class Killable : MonoBehaviour
+    public abstract class Killable : QuestItem
     {
-        private OnKilled _onKilled = delegate {  };
+        private OnKilled onKilled = delegate {  };
         public delegate void OnKilled();
 
         public void AddEventKilled(OnKilled cb)
         {
-            _onKilled += cb;
+            onKilled += cb;
         }
         
         protected void TriggerKilledCallback()
         {
-            _onKilled.Invoke();
-            _onKilled = delegate {  };
+            onKilled.Invoke();
+            onKilled = delegate {  };
         }
     }
 }

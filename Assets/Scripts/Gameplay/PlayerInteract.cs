@@ -7,7 +7,7 @@ namespace Gameplay
     public class PlayerInteract : MonoBehaviour
     {
         [SerializeField] private GameObject interactPopup;
-        NPCController _currentNPC;
+        NPCController currentNPC;
         [SerializeField] private InputActionAsset inputActionAsset;
 
         void Start()
@@ -20,15 +20,15 @@ namespace Gameplay
 
         void OnInteract(InputAction.CallbackContext context)
         {
-            if (_currentNPC != null)
+            if (currentNPC != null)
             {
-                if (_currentNPC.IsLastQuestDone())
+                if (currentNPC.IsLastQuestDone())
                 {
-                    _currentNPC.CompleteQuest();
+                    currentNPC.CompleteQuest();
                 }
-                else if (_currentNPC.HasQuests())
+                else if (currentNPC.HasQuests())
                 {
-                    _currentNPC.AcceptQuest();
+                    currentNPC.AcceptQuest();
                 }
             }
         }
@@ -37,8 +37,8 @@ namespace Gameplay
         {
             if (triggerCollider.CompareTag(GameTag.NPC))
             {
-                _currentNPC = triggerCollider.gameObject.GetComponent<NPCController>();
-                if (_currentNPC.HasQuests())
+                currentNPC = triggerCollider.gameObject.GetComponent<NPCController>();
+                if (currentNPC.HasQuests())
                 {
                     interactPopup.transform.position = triggerCollider.transform.position + new Vector3(0, 1, 0);
                     interactPopup.SetActive(true);
@@ -51,7 +51,7 @@ namespace Gameplay
             if (triggerCollider.CompareTag("NPC"))
             {
                 interactPopup.SetActive(false);
-                _currentNPC = null;
+                currentNPC = null;
             }
         }
     }

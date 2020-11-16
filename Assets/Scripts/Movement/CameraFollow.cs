@@ -17,10 +17,10 @@ public class CameraFollow : MonoBehaviour
 
 	private Vector3 lerpedPosition;
 
-    private Camera _camera;
+    private Camera camera;
 
     private void Awake() {
-        _camera = GetComponent<Camera>();
+        camera = GetComponent<Camera>();
     }
 
     // FixedUpdate is called every frame, when the physics are calculated
@@ -46,8 +46,8 @@ public class CameraFollow : MonoBehaviour
 
             // Bounds the camera to the limits (if enabled)
             if(limitBounds) {
-                Vector3 bottomLeft = _camera.ScreenToWorldPoint(Vector3.zero);
-                Vector3 topRight = _camera.ScreenToWorldPoint(new Vector3(_camera.pixelWidth, _camera.pixelHeight));
+                Vector3 bottomLeft = camera.ScreenToWorldPoint(Vector3.zero);
+                Vector3 topRight = camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth, camera.pixelHeight));
                 Vector2 screenSize = new Vector2(topRight.x - bottomLeft.x, topRight.y - bottomLeft.y);
 
                 Vector3 boundPosition = transform.position;
